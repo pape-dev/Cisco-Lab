@@ -1,0 +1,117 @@
+R1#show running-config 
+Building configuration...
+
+Current configuration : 1480 bytes
+!
+version 15.4
+service timestamps log datetime msec
+no service timestamps debug datetime msec
+service password-encryption
+!
+hostname R1
+!
+!
+!
+enable secret 5 $1$mERr$9cTjUIEqNGurQiFU.ZeCi1
+!
+!
+!
+!
+!
+!
+no ip cef
+ipv6 unicast-routing
+!
+no ipv6 cef
+!
+!
+!
+username admin password 7 0822404F1A0A
+!
+!
+!
+!
+!
+!
+!
+!
+ip ssh version 2
+ip ssh time-out 60
+no ip domain-lookup
+ip domain-name www.estiam.com
+!
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0/0
+ ip address 192.168.1.161 255.255.255.240
+ no lldp receive
+ no lldp transmit
+ duplex auto
+ speed auto
+ no cdp enable
+!
+interface GigabitEthernet0/0/1
+ ip address 192.168.1.145 255.255.255.240
+ no lldp receive
+ no lldp transmit
+ duplex auto
+ speed auto
+ no cdp enable
+!
+interface Serial0/1/0
+ ip address 192.168.1.177 255.255.255.240
+ ip ospf hello-interval 20
+ ip ospf dead-interval 80
+!
+interface Serial0/1/1
+ no ip address
+ clock rate 2000000
+ shutdown
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router ospf 10
+ log-adjacency-changes
+ auto-cost reference-bandwidth 1000
+ network 192.168.1.144 0.0.0.15 area 0
+ network 192.168.1.160 0.0.0.15 area 0
+ network 192.168.1.176 0.0.0.15 area 0
+!
+ip classless
+!
+ip flow-export version 9
+!
+!
+!
+no cdp run
+!
+banner motd ^CThis is Lab Inter-VLAN SWITCH ROUTER^C
+!
+!
+!
+!
+logging 209.165.200.7
+line con 0
+ password 7 0822404F1A0A
+ logging synchronous
+ login
+!
+line aux 0
+!
+line vty 0 4
+ logging synchronous
+ login local
+ transport input ssh
+!
+!
+ntp server 192.168.1.178
+!
+end

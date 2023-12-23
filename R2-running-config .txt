@@ -1,0 +1,168 @@
+R2#show running-config 
+Building configuration...
+
+Current configuration : 3044 bytes
+!
+version 15.4
+service timestamps log datetime msec
+no service timestamps debug datetime msec
+service password-encryption
+!
+hostname R2
+!
+!
+!
+enable secret 5 $1$mERr$9cTjUIEqNGurQiFU.ZeCi1
+!
+!
+!
+ip dhcp pool VLAN-50
+ network 192.168.1.64 255.255.255.240
+ default-router 192.168.1.65
+ dns-server 8.8.8.8
+ip dhcp pool VLAN-60
+ network 192.168.1.80 255.255.255.240
+ default-router 192.168.1.81
+ dns-server 8.8.8.8
+ip dhcp pool VLAN-70
+ network 192.168.1.112 255.255.255.240
+ default-router 192.168.1.113
+ dns-server 8.8.8.8
+ip dhcp pool VLAN-80
+ network 192.168.1.128 255.255.255.240
+ default-router 192.168.1.129
+ dns-server 8.8.8.8
+!
+!
+!
+no ip cef
+ipv6 unicast-routing
+!
+no ipv6 cef
+!
+!
+!
+username admin password 7 0822404F1A0A
+!
+!
+!
+!
+!
+!
+!
+!
+ip ssh version 2
+ip ssh time-out 60
+no ip domain-lookup
+ip domain-name www.estiam.com
+!
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0/0
+ no ip address
+ no lldp receive
+ no lldp transmit
+ ip nat inside
+ duplex auto
+ speed auto
+ no cdp enable
+!
+interface GigabitEthernet0/0/0.50
+ description VLAN-50
+ encapsulation dot1Q 50
+ ip address 192.168.1.65 255.255.255.240
+!
+interface GigabitEthernet0/0/0.60
+ description VLAN-60
+ encapsulation dot1Q 60
+ ip address 192.168.1.81 255.255.255.240
+!
+interface GigabitEthernet0/0/1
+ no ip address
+ no lldp receive
+ no lldp transmit
+ ip nat inside
+ duplex auto
+ speed auto
+ no cdp enable
+!
+interface GigabitEthernet0/0/1.70
+ description VLAN-70
+ encapsulation dot1Q 70
+ ip address 192.168.1.113 255.255.255.240
+!
+interface GigabitEthernet0/0/1.80
+ description VLAN-80
+ encapsulation dot1Q 80
+ ip address 192.168.1.129 255.255.255.240
+!
+interface Serial0/1/0
+ ip address 192.168.1.178 255.255.255.240
+ ip ospf hello-interval 20
+ ip ospf dead-interval 80
+ clock rate 2000000
+!
+interface Serial0/1/1
+ ip address 192.168.1.193 255.255.255.240
+ ip nat outside
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router ospf 10
+ log-adjacency-changes
+ passive-interface GigabitEthernet0/0/0
+ passive-interface GigabitEthernet0/0/1
+ auto-cost reference-bandwidth 1000
+ network 192.168.1.64 0.0.0.15 area 0
+ network 192.168.1.80 0.0.0.15 area 0
+ network 192.168.1.112 0.0.0.15 area 0
+ network 192.168.1.128 0.0.0.15 area 0
+ network 192.168.1.192 0.0.0.15 area 0
+ network 192.168.1.176 0.0.0.15 area 0
+!
+ip nat pool VLAN-50-60 209.165.200.229 209.165.200.230 netmask 255.255.255.252
+ip nat pool VLAN-70-80 209.165.200.233 209.165.200.234 netmask 255.255.255.252
+ip nat inside source list 20 pool VLAN-70-80 overload
+ip nat inside source list 9 pool VLAN-50-60
+ip classless
+!
+ip flow-export version 9
+!
+!
+access-list 10 permit 192.168.1.64 0.0.0.15
+access-list 10 permit 192.168.1.80 0.0.0.15
+access-list 20 permit 192.168.1.112 0.0.0.15
+access-list 20 permit 192.168.1.128 0.0.0.15
+!
+no cdp run
+!
+banner motd ^CThis is Lab Inter-VLAN SWITCH ROUTER^C
+!
+!
+!
+!
+logging 209.165.200.7
+line con 0
+ password 7 0822404F1A0A
+ logging synchronous
+ login
+!
+line aux 0
+!
+line vty 0 4
+ logging synchronous
+ login local
+ transport input ssh
+!
+!
+ntp server 192.168.1.194
+!
+end
